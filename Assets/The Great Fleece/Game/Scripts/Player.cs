@@ -8,6 +8,9 @@ public class Player : MonoBehaviour
     private NavMeshAgent _agent;
     private Animator _anim;
     private Vector3 _target;
+    public GameObject _coinPrefab;
+    public AudioClip _coinClip;
+    private bool _hasCoin = true;
 
     void Start()
     {
@@ -20,18 +23,27 @@ public class Player : MonoBehaviour
         if(Input.GetMouseButtonDown(0))
         {
             Ray rayOrigin = Camera.main.ScreenPointToRay(Input.mousePosition);
-
             RaycastHit hitInfo;
 
             if(Physics.Raycast(rayOrigin, out hitInfo))
             {
-                //Debug.Log("Hit: " + hitInfo.point);
-                //GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                //cube.transform.position = hitInfo.point;
-
                 _agent.SetDestination(hitInfo.point);
                 _target = hitInfo.point;
                 _anim.SetBool("Walk", true);
+            }
+        }
+        if (Input.GetMouseButtonDown(1) && _hasCoin)
+        {
+            Ray rayOrigin = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hitInfo;
+
+            if (Physics.Raycast(rayOrigin, out hitInfo))
+            {
+                _anim.SetTrigger("Throw");
+                _hasCoin = false;
+                Instantiate(_coinPrefab, hitInfo.point, Quaternion.identity);
+                AudioSource.PlayClipAtPoint(_coinClip, hitInfo.point);
+                SendAIToCoin(hitInfo.point);
             }
         }
 
@@ -39,6 +51,22 @@ public class Player : MonoBehaviour
         if(distance < 1.0f)
         {
             _anim.SetBool("Walk", false);
+        }
+    }
+
+    void SendAIToCoin(Vector3 coinPos)
+    {
+        GameObject[] guards = GameObject.FindGameObjectsWithTag("Guard1");
+        foreach(var guard in guards)
+        {
+            NavMeshAgent _currentAgent = guard.GetComponent<NavMeshAgent>();
+            GuardAI _currentGuard = guard.GetComponent<GuardAI>();
+            Animator _currentAnim = guard.GetComponent<Animator>();
+
+            _currentGuard._coinTossed = true;
+            _currentGuard._coinPos = coinPos;
+            _currentAgent.SetDestination(coinPos);
+            _currentAnim.SetBool("Walking", true);
         }
     }
 }
