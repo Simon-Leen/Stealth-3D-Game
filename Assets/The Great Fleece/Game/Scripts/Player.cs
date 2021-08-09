@@ -48,7 +48,7 @@ public class Player : MonoBehaviour
         }
 
         float distance = Vector3.Distance(transform.position, _target);
-        if(distance < 1.0f)
+        if(distance < 1.5f)
         {
             _anim.SetBool("Walk", false);
         }
