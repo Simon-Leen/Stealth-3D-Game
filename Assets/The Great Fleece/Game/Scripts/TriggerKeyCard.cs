@@ -11,6 +11,7 @@ public class TriggerKeyCard : MonoBehaviour
         if(other.tag == "Player")
         {
             _cutscene.SetActive(true);
+            GameManager.Instance.HasCard = true;
             StartCoroutine("EndCutscene");
             Camera.main.transform.position = _activeCam.position;
             Camera.main.transform.rotation = _activeCam.rotation;

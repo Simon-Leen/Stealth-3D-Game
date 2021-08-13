@@ -60,7 +60,7 @@ public class GuardAI : MonoBehaviour
         else
         {
             float distance = Vector3.Distance(transform.position, _coinPos);
-            if(distance < 4f)
+            if(distance < 5f)
             {
                 _anim.SetBool("Walking", false);
             }
